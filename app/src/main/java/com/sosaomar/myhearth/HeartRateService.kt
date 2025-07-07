@@ -44,9 +44,16 @@ class HeartRateService : Service(), SensorEventListener {
             val bpm = event.values[0].toInt()
             Log.d(TAG, "Pulso: $bpm")
             sendToPhone(bpm)
+            updateUIOnWatch(bpm)
         }
         Log.d(TAG, "onSensorChanged recibido: ${event?.values?.joinToString()}")
 
+    }
+
+    private fun updateUIOnWatch(bpm: Int) {
+        val intent = Intent("com.sosaomar.myhearth.HEART_RATE_UPDATE")
+        intent.putExtra("bpm", bpm)
+        sendBroadcast(intent)
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}

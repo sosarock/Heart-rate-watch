@@ -9,7 +9,8 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.sosaomar.myhearth"
+//        applicationId = "com.sosaomar.myhearth"
+        applicationId = "com.infinixsoft.keeper"
         minSdk = 30
         targetSdk = 35
         versionCode = 1

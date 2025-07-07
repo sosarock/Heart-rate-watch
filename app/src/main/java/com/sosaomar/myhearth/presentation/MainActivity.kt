@@ -1,7 +1,11 @@
 package com.sosaomar.myhearth.presentation
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
@@ -12,6 +16,20 @@ import com.sosaomar.myhearth.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+
+    private val heartRateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == "com.sosaomar.myhearth.HEART_RATE_UPDATE") {
+                val bpm = intent.getIntExtra("bpm", -1)
+                if (bpm != -1) {
+                    runOnUiThread {
+                        binding.tvHeartRate.text = "Pulso: $bpm"
+                    }
+                }
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -22,8 +40,20 @@ class MainActivity : AppCompatActivity() {
             } else {
                 requestPermissionLauncher.launch(Manifest.permission.BODY_SENSORS)
             }
+
         }
 
+    }
+
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
+    override fun onResume() {
+        super.onResume()
+        registerReceiver(heartRateReceiver, IntentFilter("com.sosaomar.myhearth.HEART_RATE_UPDATE"))
+    }
+
+    override fun onPause() {
+        super.onPause()
+        unregisterReceiver(heartRateReceiver)
     }
 
     private val requestPermissionLauncher = registerForActivityResult(
